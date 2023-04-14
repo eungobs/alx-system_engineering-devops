@@ -1,2 +1,3 @@
-#!/bin/bash
-ls .lan
+3!/bin/bash
+ls -al
+

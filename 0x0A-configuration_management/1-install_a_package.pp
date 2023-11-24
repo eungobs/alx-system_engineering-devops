@@ -8,4 +8,5 @@ exec { 'install_flask':
   path    => ['/usr/bin'],
   unless  => '/usr/bin/pip3 show flask | grep -q "^Version: 2.1.0"',
   require => Package['python3-pip'],
+  refreshonly => true,
 }

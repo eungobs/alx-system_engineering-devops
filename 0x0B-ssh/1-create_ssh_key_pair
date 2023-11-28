@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-#creates RSA keypair
 
-ssh-keygen -b 4096 -f school -N betty
+# Creates an RSA key pair protected by the passphrase "betty"
+
+ssh-keygen -t rsa -b 4096 -f school -N "betty"

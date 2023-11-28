@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Connects to the server 402441-web-01 using SSH with a private key and the user ubuntu
+
+ssh -i ~/.ssh/school ubuntu@402441-web-01

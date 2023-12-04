@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Configure Nginx to include a custom header in HTTP response on web-01 and web-02
+# Configure Nginx with a custom response header on web-01 and web-02
 
 # Determine the custom header value (X-Served-By)
 custom_header="X-Served-By $(hostname)"
@@ -13,5 +13,5 @@ configure_nginx() {
     sudo systemctl restart nginx
 }
 
-# Execute the function on web-01 and web-02 servers
+# Execute the function on both web-01 and web-02 servers
 configure_nginx "$custom_header"

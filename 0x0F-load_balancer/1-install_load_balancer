@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# Replace with your actual student ID
+# Installs, configures, and starts the load balancer
 STUDENT_ID="402441"
 
 # Update package list and install HAProxy
@@ -34,8 +33,8 @@ frontend http_front
 
 backend http_back
     balance roundrobin
-    server web-01 ${STUDENT_ID}-web-01:80 check
-    server web-02 ${STUDENT_ID}-web-02:80 check
+    server web-01 ${STUDENT_ID}-web-01:80 
+    server web-02 ${STUDENT_ID}-web-02:80 
 EOF
 
 # Enable HAProxy service

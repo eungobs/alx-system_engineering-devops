@@ -1,39 +1,41 @@
 #!/usr/bin/env bash
 # Configure web-02 to be identical to web-01 and add a custom HTTP header to Nginx
 
-# Update and install Nginx
+# Update package list and install Nginx
 sudo apt-get update
-sudo apt-get -y install nginx
+sudo apt-get install -y nginx
 
 # Allow Nginx through the firewall
 sudo ufw allow 'Nginx HTTP'
 
-# Create directories and set permissions
+# Create necessary directories and set permissions
 sudo mkdir -p /var/www/html /var/www/error
 sudo chmod -R 755 /var/www
 
 # Set basic HTML content
-echo 'Hello World!' | sudo tee /var/www/html/index.html > /dev/null
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
+sudo sh -c 'echo "Hello World!" > /var/www/html/index.html'
+sudo sh -c 'echo "Ceci n'est pas une page" > /var/www/html/404.html'
 
-# Configure Nginx default server block
-server_config="server {
+# Configure Nginx default server block with the custom header
+sudo cat << EOF | sudo tee /etc/nginx/sites-enabled/default > /dev/null
+server {
     listen 80 default_server;
     listen [::]:80 default_server;
     root /var/www/html;
     index index.html index.htm index.nginx-debian.html;
     server_name _;
     add_header X-Served-By \$hostname;
+
     location / {
         try_files \$uri \$uri/ =404;
     }
+
     error_page 404 /404.html;
     location = /404.html {
         internal;
     }
-}"
-
-echo "$server_config" | sudo tee /etc/nginx/sites-enabled/default > /dev/null
+}
+EOF
 
 # Restart Nginx to apply changes
 sudo systemctl restart nginx

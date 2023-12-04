@@ -1,41 +1,21 @@
 #!/usr/bin/env bash
-# Configure web-02 to be identical to web-01 and add a custom HTTP header to Nginx
+# Configure Nginx to include a custom header in HTTP response on web-01 and web-02
 
-# Update package list and install Nginx
-sudo apt-get update
-sudo apt-get install -y nginx
+# Set the custom header value
+custom_header="X-Served-By $(hostname)"
 
-# Allow Nginx through the firewall
-sudo ufw allow 'Nginx HTTP'
+# Function to configure Nginx
+configure_nginx() {
+    echo "Hello World!" | sudo tee /usr/share/nginx/html/index.html > /dev/null
+    sudo mkdir -p /var/www/html
+    echo "Ceci n'est pas une page" | sudo tee /var/www/html/custom_404.html > /dev/null
 
-# Create necessary directories and set permissions
-sudo mkdir -p /var/www/html /var/www/error
-sudo chmod -R 755 /var/www
+    # Add the custom header to Nginx configuration
+    sudo sed -i -E "s/# server_name _;/server_name _;\n    add_header $1;/" /etc/nginx/sites-available/default
 
-# Set basic HTML content
-sudo sh -c 'echo "Hello World!" > /var/www/html/index.html'
-sudo sh -c 'echo "Ceci n'est pas une page" > /var/www/html/404.html'
-
-# Configure Nginx default server block with the custom header
-sudo cat << EOF | sudo tee /etc/nginx/sites-enabled/default > /dev/null
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-    add_header X-Served-By \$hostname;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-
-    error_page 404 /404.html;
-    location = /404.html {
-        internal;
-    }
+    # Restart Nginx service
+    sudo systemctl restart nginx
 }
-EOF
 
-# Restart Nginx to apply changes
-sudo systemctl restart nginx
+# Execute the function on web-01 and web-02 servers
+configure_nginx "$custom_header"

@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 # Configure Nginx to include a custom header in HTTP response on web-01 and web-02
 
-# Set the custom header value
+# Determine the custom header value (X-Served-By)
 custom_header="X-Served-By $(hostname)"
 
-# Function to configure Nginx
+# Function to configure Nginx with the custom header
 configure_nginx() {
-    echo "Hello World!" | sudo tee /usr/share/nginx/html/index.html > /dev/null
-    sudo mkdir -p /var/www/html
-    echo "Ceci n'est pas une page" | sudo tee /var/www/html/custom_404.html > /dev/null
-
     # Add the custom header to Nginx configuration
     sudo sed -i -E "s/# server_name _;/server_name _;\n    add_header $1;/" /etc/nginx/sites-available/default
 

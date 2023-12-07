@@ -1,0 +1,15 @@
+# File: /etc/haproxy/haproxy.cfg
+
+frontend http_front
+    bind *:80
+    mode http
+    option forwardfor
+    reqadd X-Forwarded-Proto:\ http
+
+    acl is_https hdr(X-Forwarded-Proto) https
+    redirect scheme https code 301 if !is_https
+
+backend https_back
+    mode http
+    server server1 34.204.60.80
+

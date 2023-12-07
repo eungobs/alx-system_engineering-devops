@@ -1,22 +1,29 @@
-#!/usr/bin/env bash
-# Script to display information about subdomains
+#!/bin/bash
 
-get_subdomain_info() {
+display_info() {
     local domain="$1"
     local subdomain="$2"
-    
+
     if [ -z "$subdomain" ]; then
         subdomains=("www" "lb-01" "web-01" "web-02")
     else
         subdomains=("$subdomain")
     fi
-    
+
     for sub in "${subdomains[@]}"; do
-        dig_output=$(dig "$sub"."$domain" | awk '/ANSWER SECTION/ {p=1; next} p {print}' | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b")
-        record_type=$(echo "$dig_output" | awk 'NR==1{print $2}')
-        destination=$(echo "$dig_output" | awk 'NR==1{print $1}')
-        echo "The subdomain $sub is a $record_type record and points to $destination"
+        result=$(dig +short "$sub.$domain" | awk '{print $1}')
+        if [ -n "$result" ]; then
+            record_type=$(dig +short "$sub.$domain" | awk 'NR==1 {print $NF}')
+            echo "The subdomain $sub is a $record_type record and points to $result"
+        fi
     done
 }
 
-get_subdomain_info "$1" "$2"
+if [ $# -eq 1 ]; then
+    display_info "$1"
+elif [ $# -eq 2 ]; then
+    display_info "$1" "$2"
+else
+    echo "Invalid number of arguments. Usage: $0 domain [subdomain]"
+    exit 1
+fi

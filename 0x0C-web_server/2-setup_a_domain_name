@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Check and update nameservers
 echo "Current nameservers:"
 dig +short NS 402441-web-01.tech

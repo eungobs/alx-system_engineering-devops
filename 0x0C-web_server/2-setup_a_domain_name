@@ -1,1 +1,22 @@
-402441-web-01.tech
+#!/bin/bash
+
+# Check and update nameservers
+echo "Current nameservers:"
+dig +short NS 402441-web-01.tech
+
+echo "Updating nameservers..."
+# Replace NS1 and NS2 with your hosting provider's nameservers
+dig +short @your_domain_registrar.com NS 402441-web-01.tech
+
+# FTP upload (example)
+echo "Uploading website files via FTP..."
+# Replace placeholders with your FTP details and commands
+ftp your_ftp_domain_or_IP <<EOF
+put /path/to/local/website/files /remote/server/directory
+quit
+EOF
+
+# Set DNS records (example A record)
+echo "Setting DNS A record..."
+# Replace IP_ADDRESS with your server's IP
+your_domain_registrar.com A 402441-web-01.tech IP_ADDRESS

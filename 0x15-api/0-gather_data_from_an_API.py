@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-uses https://jsonplaceholder.typicode.com along with an employee ID to
+Uses https://jsonplaceholder.typicode.com along with an employee ID to
 return information about the employee's todo list progress
 """
 

@@ -1,36 +1,19 @@
-#!/usr/bin/env python3
-"""
-0-subs.py - Fetches the number of subscribers
-for a given subreddit using the Reddit API.
+#!/usr/bin/python3
+"""queries the Reddit API and returns the number of subscribers
+(not active users, total subscribers) for a given subreddit
 """
 import requests
 
 
 def number_of_subscribers(subreddit):
-    """
-    Returns the number of subscribers for a given subreddit.
-    If the subreddit is invalid, returns 0.
-    """
-    # Construct the URL for the subreddit information endpoint
-    url = f"https://www.reddit.com/r/{subreddit}/about.json"
-
-    # Set a custom User-Agent to avoid API restrictions
-    headers = {"User-Agent": "custom_user_agent"}
-
-    try:
-        # Send a GET request to the Reddit API
-        response = requests.get(url, headers=headers, allow_redirects=False)
-
-        # Check if the request was successful (status code 200)
-        if response.status_code == 200:
-            # Parse the JSON response to extract subscriber count
-            data = response.json()
-            subscribers_count = data['data']['subscribers']
-            return subscribers_count
-        else:
-            # Return 0 for invalid subreddits or other errors
-            return 0
-    except Exception as e:
-        # Print an error message if an exception occurs during the request
-        print(f"Error: {e}")
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) Apple' +
+        'WebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+    }
+    r = requests.get('https://www.reddit.com/r/{:}/about.json'.format(
+        subreddit), headers=headers, allow_redirects=False)
+    if r.status_code >= 300:
         return 0
+    json = r.json()
+    data_dict = json.get('data')
+    return(data_dict.get('subscribers'))

@@ -1,46 +1,27 @@
 #!/usr/bin/python3
+"""queries the Reddit API and returns a list containing the titles of all
+hot articles for a given subreddit
+"""
 import requests
 
 
 def recurse(subreddit, hot_list=[], after=None):
-    """
-    Recursively queries the Reddit API and returns a list of titles for
-    all hot articles in a given subreddit.
-    If the subreddit is invalid or no results are found, returns None.
-    """
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-
-    headers = {'User-agent': 'my-bot'}
-    params = {'after': after} if after else {}
-    # Simplify handling of 'after' parameter
-
-    try:
-        response = requests.get(
-                url, headers=headers, params=params, allow_redirects=False
-                )
-
-        if response.status_code == 200:
-            data = response.json().get('data')
-            after = data.get('after')
-            post_list = data.get('children')
-
-            # Use list comprehension for a more concise code
-            hot_list.extend(
-                    [post.get("data").get("title") for post in post_list]
-                    )
-
-            if after is not None:
-                # If there is another page, recursively call
-                # the function with the next 'after' parameter
-                return recurse(subreddit, hot_list, after)
-            else:
-                # If there is no new page,
-                # check for an empty hot_list and return None
-                return hot_list if hot_list else None
-        else:
-            # Return None for non-200 status codes
-            return None
-    except Exception as e:
-        # Print an error message if an exception occurs during the request
-        print(f"Error: {e}")
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) Apple' +
+        'WebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+    }
+    r = requests.get('https://www.reddit.com/r/{:}/hot.json?after={:}'.format(
+        subreddit, after), headers=headers, allow_redirects=False)
+    if r.status_code == 200:
+        json = r.json()
+        data_dict = json.get('data')
+        post_list = data_dict.get('children')
+        for post in post_list:
+            post_data_dict = post.get('data')
+            hot_list.append(post_data_dict.get('title'))
+        after = data_dict.get('after')
+        if data_dict.get('after') is None:
+            return hot_list
+        return recurse(subreddit, hot_list, after)
+    else:
         return None

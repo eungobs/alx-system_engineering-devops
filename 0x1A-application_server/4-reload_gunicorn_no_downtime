@@ -1,0 +1,2 @@
+ll gunicorn worker processe gracefully, with no downtime
+pkill -HUP gunicorn
